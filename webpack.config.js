@@ -29,7 +29,7 @@ glob.sync('./src/pages/**/app.js').forEach(path => {
 })
 
 const debug = process.env.NODE_ENV !== "production"
-const devPort = 7290
+const devPort = 8088
 var config = {
   entry: entries,
   output: {
