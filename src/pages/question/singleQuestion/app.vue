@@ -16,7 +16,9 @@
       <group>
         <x-textarea :max="100" placeholder="请输入您的题干(必填)" :height="200" :rows="8" :cols="30" @on-change="onChange" aria-required="true"></x-textarea>
       </group>
-      <div class="questionTitle">请您录入选项（请在正确答案后打✔√）：</div>
+      <div class="questionTitle">请您录入选项（请在正确答案后打√）：</div>
+      <checklist  required :options="commonList" v-model="checklist001" @on-change="change"></checklist>
+      <label for=""><input type="text" style="height:30px;border:1px solid #ccc;outline:none"><input type="checkbox" style="height:30px;width:30px"></label>
       <group>
           <x-input title="医生姓名" v-model="name"  placeholder="请输入您的姓名(必填)" is-type="china-name"></x-input>
       </group>
@@ -58,8 +60,9 @@
 </template>
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
-import { XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { post } from 'common/service/http.base'
+
 import { createOId, getOId } from 'common/js/utils'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
@@ -68,6 +71,7 @@ Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
   components: {
+    Checklist,
     XTextarea,
     XInput,
     Group,
@@ -82,6 +86,8 @@ export default {
       sucShow: false,
       name: '',
       phone: '',
+      commonList: [ 'China', 'Japan', 'America' ],
+      checklist001: [],
       qsAreaList: [{ key: 1, value: '心衰' }, { key: 2, value: '血脂' }],
       qsType1List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }],
       qsType2List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }, { key: 3, value: '学科发展' }, { key: 4, value: '治疗方法' }],
@@ -93,6 +99,9 @@ export default {
     }
   },
   methods: {
+    change (val, label) {
+      console.log('change', val, label)
+    },
     onChange(val) {
       console.log(val)
     },
