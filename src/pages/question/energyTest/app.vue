@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     startTtest() {
-      location.href = './question1.html'
+      location.href = './testOne.html'
     },
     confirm() {
       this.confirmShow = true

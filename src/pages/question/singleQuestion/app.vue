@@ -116,17 +116,27 @@ export default {
     turn: function (e) {
       var index = e.target.getAttribute('id')
       if (e.target.getAttribute('class').indexOf('checked') >= 0) {
-        console.log(index)
-        console.log(this.reqs[index])
+        // console.log(index)
+        // console.log(this.reqs[index])
         this.reqs[index]['isright'] = false
         e.target.setAttribute('class', 'inputcheckbox')
         document.querySelector('input[type=checkbox]').removeAttribute('checked')
       } else {
-        console.log(index)
-        console.log(this.reqs[index])
+        // console.log(index)
+        // console.log(this.reqs[index])
         this.reqs[index]['isright'] = true
         e.target.setAttribute('class', 'inputcheckbox checked')
         document.querySelector('input[type=checkbox]').setAttribute('checked', 'checked')
+        if (this.reqs.length > 1) {
+          this.$vux.alert.show({
+            title: '只能选择一项正确答案',
+            onShow() {
+            },
+            onHide() {
+            }
+          })
+          return false
+        }
       }
     },
     // 问题规则
