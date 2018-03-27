@@ -44,13 +44,14 @@
 import Vue from 'vue'
 import { Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { post } from 'common/service/http.base'
-import { createOId, getOId } from 'common/js/utils'
+import { checkForm, Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [checkForm, Auth],
   components: {
     XInput,
     Group,
@@ -60,7 +61,7 @@ export default {
   },
   data() {
     return {
-      defShow: true,
+      defShow: false,
       sucShow: false,
       name: '',
       phone: ''
@@ -105,36 +106,34 @@ export default {
       this.submit()
     },
     submit() {
-      let url = '/api/post/auth'
+      let url = '/api/login/'
       let params = {
-        name: this.name,
-        phone: this.password,
-        openid: getOId(this)
+        username: this.name,
+        mobile: this.phone,
+        openid: localStorage.getItem('openid')
       }
       this.$vux.loading.show({
         text: '认证中...'
       })
       post(url, params).then(res => {
-        // console.log(res)
+        console.log('res' + res)
+        console.log(res.data.status)
         this.$vux.loading.hide()
-        if (res.data.ret === 0) {
-          // this.$vux.toast.text('认证成功~', 'middle')
-          // location.href = './Success.html'
+        if (res.data.status === 0) {
           this.sucShow = true
           return
         }
-        this.defShow = false
-        this.$vux.toast.text('认证失败~', 'middle')
+        this.defShow = true
+        // this.$vux.toast.text('认证失败~', 'middle') toast方法提示
       }, e => {
         this.$vux.loading.hide()
         // this.$vux.toast.text('提交失败，请重新提交~', 'middle')
-        this.sucShow = true
+        this.defShow = true
       })
     }
   },
   created() {
-    createOId(this)
-    getOId(this)
+    this.checkOpenId()
   }
 }
 </script>
