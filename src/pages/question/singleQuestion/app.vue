@@ -21,7 +21,7 @@
       <div class="inputBox" v-for="(item, index) in reqs"  :key="index">
         <input type="text" v-model="item.title" class="inputtext" placeholder="请录入您的答案(必填)" />
         <p :class="item.isright ? 'inputcheckbox checked':'inputcheckbox'" @click="turn($event)" v-bind:id="index">√</p>
-        <input type="checkbox"  style="height: 100%;display: none;" />
+        <!-- <input type="checkbox"  style="height: 100%;display: none;" /> -->
 		  </div>
   
       </div>
@@ -98,8 +98,7 @@ export default {
       lurusucShow: false,
       lurudefShow: false,
       qsAreaList: [{ key: 1, value: '心衰' }, { key: 2, value: '血脂' }],
-      qsType1List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }],
-      qsType2List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }, { key: 3, value: '学科发展' }, { key: 4, value: '治疗方法' }],
+      qsType1List: [],
       titleArea: '',
       qsPutList: [{ key: 1, value: '单选' }, { key: 2, value: '多选' }],
       qsAreaListS: null,
@@ -109,35 +108,52 @@ export default {
       reqs: [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
     }
   },
+  mounted() {
+    this.getQsTypeList()
+  },
   methods: {
+    getQsTypeList() {
+      let url = '/api/setquestioninfo/'
+      let params = {
+        qstitleArea: this.titleArea
+      }
+      get(url, params).then(res => {
+        if (res.status === -1) {
+          this.$vux.alert(res.umsg)
+          return
+        }
+        if (res.user_type === 1) {
+          this.qsType1List = [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }, { key: 3, value: '学科发展' }, { key: 4, value: '治疗方法' }]
+        } else {
+          this.qsType1List = [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }]
+        }
+      })
+    },
     checkboxChange(a) {
       console.log(a)
     },
     // 绑定类名
-    turn: function (e) {
+    turn(e) {
       var index = e.target.getAttribute('id')
       if (e.target.getAttribute('class').indexOf('checked') >= 0) {
-        // console.log(index)
-        // console.log(this.reqs[index])
         this.reqs[index]['isright'] = false
-        e.target.setAttribute('class', 'inputcheckbox')
-        document.querySelector('input[type=checkbox]').removeAttribute('checked')
       } else {
-        // console.log(index)
-        // console.log(this.reqs[index])
-        this.reqs[index]['isright'] = true
-        e.target.setAttribute('class', 'inputcheckbox checked')
-        document.querySelector('input[type=checkbox]').setAttribute('checked', 'checked')
-        if (this.reqs.length > 1) {
-          this.$vux.alert.show({
-            title: '只能选择一项正确答案',
-            onShow() {
-            },
-            onHide() {
-            }
-          })
-          return false
+        if (this.qsPutListS === 1) {
+          if (document.querySelectorAll('.inputcheckbox.checked').length >= 1) {
+            this.$vux.alert.show({
+              title: '单选最多选择一个正确答案哦'
+            })
+            return
+          }
+        } else if (this.qsPutListS === 2) {
+          if (document.querySelectorAll('.inputcheckbox.checked').length >= 2) {
+            this.$vux.alert.show({
+              title: '多选最多选择两个正确答案哦'
+            })
+            return
+          }
         }
+        this.reqs[index]['isright'] = true
       }
     },
     // 问题规则
