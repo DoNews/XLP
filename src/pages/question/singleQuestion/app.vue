@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="padd">
       <div class="questionRules" @click='rules'>问题录入规则 <span>!</span>	  </div> 
       <div class="questionForm">
         <group>
-          <selector placeholder="问题领域" v-model="qsAreaListS" title="请选择问题领域:" name="area" :options="qsAreaList" @on-change="onChange"></selector>
+          <selector placeholder="问题领域" v-model="qsAreaListS" title="请选择问题领域:" name="area" :options="qsAreaList"></selector>
         </group>
          <group>
-          <selector placeholder="请选择问题种类" v-model="qsType1ListS" title="请选择问题种类:" name="type" :options="qsType1List" @on-change="onChange"></selector>
+          <selector placeholder="请选择问题种类" v-model="qsType1ListS" title="请选择问题种类:" name="type" :options="qsType1List" ></selector>
         </group>
          <group>
           <selector placeholder="请选择出题题型" v-model="qsPutListS" title="请选择出题题型:" name="typesub" :options="qsPutList" @on-change="onChange"></selector>
@@ -14,23 +14,16 @@
       </div>
       <div class="questionTitle">请您录入题干</div>
       <group>
-        <x-textarea :max="100" placeholder="请输入您的题干(必填)" v-model="titleArea" :height="200" :rows="8" :cols="30"  @on-blur="onBlur" aria-required="true"></x-textarea>
+        <x-textarea :max="100" placeholder="请输入您的题干(必填)" v-model="titleArea" :height="180"  @on-blur="onBlur" aria-required="true"></x-textarea>
       </group>
       <div class="questionTitle">请您录入选项（请在正确答案后打√）：</div>
       <div>
-      <div><input type="text"   placeholder="请录入您的答案(必填)" class='w80'/> <input type="checkbox" class="checkbox" required /></div>
-      <group>
-        <x-input value=""  type="text" v-model="req1"  placeholder="请录入您的答案(必填)" placeholder-class=""  maxlength="140" required ></x-input>
-      </group>
-      <group>
-        <x-input value=""  type="text" v-model="req2"   placeholder="请录入您的答案(必填)" placeholder-class=""  maxlength="140" required></x-input>
-      </group>
-      <group>
-        <x-input value=""  type="text"  placeholder="请录入您的答案(选填)" placeholder-class=""  maxlength="140"></x-input>
-      </group>
-      <group>
-        <x-input value=""  type="text"  placeholder="请录入您的答案(选填)" placeholder-class=""  maxlength="140"></x-input>
-      </group>
+      <div class="inputBox" v-for="(item, index) in reqs"  :key="index">
+        <input type="text" v-model="item.title" class="inputtext" placeholder="请录入您的答案(必填)" />
+        <p :class="item.isright ? 'inputcheckbox checked':'inputcheckbox'" @click="turn($event)" v-bind:id="index">√</p>
+        <input type="checkbox"  style="height: 100%;display: none;" />
+		  </div>
+  
       </div>
       <x-button type="warn" class="submit" @click.native="handleSubmit">提交</x-button>
       <div>
@@ -103,8 +96,6 @@ export default {
       fivesucShow: false,
       lurusucShow: false,
       lurudefShow: false,
-      name: '',
-      phone: '',
       qsAreaList: [{ key: 1, value: '心衰' }, { key: 2, value: '血脂' }],
       qsType1List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }],
       qsType2List: [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }, { key: 3, value: '学科发展' }, { key: 4, value: '治疗方法' }],
@@ -114,30 +105,67 @@ export default {
       qsType1ListS: null,
       qsType2ListS: null,
       qsPutListS: null,
-      req1: '',
-      req2: ''
+      reqs: [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
     }
   },
   methods: {
+    checkboxChange(a) {
+      console.log(a)
+    },
+    // 绑定类名
+    turn: function (e) {
+      var index = e.target.getAttribute('id')
+      if (e.target.getAttribute('class').indexOf('checked') >= 0) {
+        console.log(index)
+        console.log(this.reqs[index])
+        this.reqs[index]['isright'] = false
+        e.target.setAttribute('class', 'inputcheckbox')
+        document.querySelector('input[type=checkbox]').removeAttribute('checked')
+      } else {
+        console.log(index)
+        console.log(this.reqs[index])
+        this.reqs[index]['isright'] = true
+        e.target.setAttribute('class', 'inputcheckbox checked')
+        document.querySelector('input[type=checkbox]').setAttribute('checked', 'checked')
+      }
+    },
     // 问题规则
     rules() {
       location.href = './questionRules.html'
     },
     onChange(val) {
-      console.log(val)
+      if (val === 2) {
+        this.reqs.push({ 'title': '', 'isright': false })
+      } else {
+        this.reqs.splice(4, 1)
+      }
     },
     fiveClo() {
       this.fivesucShow = false
     },
     onBlur() {
-      this.$vux.alert.show({
-        title: '您录入的提干与之前提交的有重复请重新录入新的提干。否则无法提交',
-        onShow() {
-        },
-        onHide() {
+      let url = '/api/cmp/'
+      let params = {
+        qstitleArea: this.titleArea
+      }
+      post(url, params).then(res => {
+        console.log(res)
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          // this.$vux.toast.text('题干无重复，请继续', 'middle')
+          return
         }
+        this.$vux.alert.show({
+          title: '您录入的提干与之前提交的有重复请重新录入新的提干。否则无法提交',
+          onShow() {
+          },
+          onHide() {
+          }
+        })
+        return false
+      }, e => {
+        this.$vux.loading.hide()
       })
-      return false
     },
     sucShowPro() {
       this.lurusucShow = false
@@ -161,7 +189,11 @@ export default {
       this.lurudefShow = false
     },
     handleSubmit() {
-      if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea || !this.req1 || !this.req2) {
+      console.log('1:', this.qsAreaListS)
+      console.log('2:', this.qsType1ListS)
+      console.log('3', this.qsPutListS)
+      console.log('4', this.titleArea)
+      if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
         this.$vux.alert.show({
           title: '您有信息未录入完成,无法提交',
           onShow() {
@@ -174,30 +206,39 @@ export default {
       this.submit()
     },
     submit() {
-      // console.log('录入问题')
-      let url = '/api/post/auth'
+      let url = '/api/putquestioninfo/'
       let params = {
-        name: this.name,
-        phone: this.password,
+        questionArea: this.qsAreaListS,
+        questionType: this.qsType1ListS,
+        questionTypeR: this.qsPutListS,
+        qstitleArea: this.titleArea,
+        questionList: JSON.stringify(this.reqs),
         openid: localStorage.getItem('openid')
       }
+      console.log('params:', params)
       this.$vux.loading.show({
-        text: '上传中...'
+        text: '提交中...'
       })
       post(url, params).then(res => {
         // console.log(res)
         this.$vux.loading.hide()
-        if (res.data.ret === 0) {
-          // this.$vux.toast.text('认证成功~', 'middle')
-          // location.href = './Success.html'
+        if (res.data.status === 0) {
           this.lurusucShow = true
           return
         }
+        if (res.data.status === -1) {
+          this.$vux.alert.show({
+            title: '您今日已经创建了五个问题了哦~~',
+            onShow() {
+            },
+            onHide() {
+            }
+          })
+          return false
+        }
         this.lurudefShow = true
-        // this.$vux.toast.text('认证失败~', 'middle')
       }, e => {
         this.$vux.loading.hide()
-        // this.$vux.toast.text('提交失败，请重新提交~', 'middle')
         this.lurudefShow = true
       })
     }
@@ -210,6 +251,43 @@ export default {
 @import '~common/stylus/reset.styl';
 @import '~common/stylus/variable.styl';
 
+.inputBox {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  margin: 10px 0;
+  justify-content: flex-start;
+}
+
+.inputcheckbox {
+  width: 49px;
+  height: 44px;
+  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #bf1e2e;
+  font-size: 30px;
+  color: #fff;
+  font-family: '宋体';
+  box-sizing: border-box;
+}
+
+.inputcheckbox.checked {
+  background-color: #bf1e2e;
+}
+
+.inputtext {
+  width: calc(100vw - 45px);
+  background-color: #f5f5f5;
+  border: none;
+  font-size: 16px;
+  padding-left: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+// 自定义输入框和对号
 .checkbox {
   width: 12%;
   height: 45px;
@@ -275,7 +353,7 @@ export default {
   width: 100%;
   height: 18px;
   line-height: 18px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #231816;
   font-weight: 300;
   letter-spacing: 1px;

@@ -1,7 +1,8 @@
 <template>
   <div>
       <div class="banImg"></div> 
-      <group>
+      <div>
+        <group>
           <x-input title="医生姓名" v-model="name"  placeholder="请输入您的姓名(必填)" is-type="china-name"></x-input>
       </group>
       <group>
@@ -10,7 +11,7 @@
       <x-button type="warn" class="submit" @click.native="handleSubmit">提交认证</x-button>
       <div>
         <popup v-model="sucShow" height="100%" is-transparent>
-          <div style="width:80%;background-color:#fff;height:300px;margin:30% auto 0;border-radius:5px;text-align:center">
+          <div style="width:80%;background-color:#fff;height:300px;margin:144px auto 0;border-radius:5px;text-align:center">
             <group>
               <h2 class="certifyT">恭喜您的认证成功！</h2>
               <p class="certifyP">请五分钟后重新进入公众号,</p>
@@ -25,7 +26,7 @@
       </div>
       <div>
         <popup v-model="defShow" height="100%" is-transparent>
-          <div style="width:80%;background-color:#fff;height:300px;margin:30% auto 0;border-radius:5px;text-align:center">
+          <div style="width:80%;background-color:#fff;height:300px;margin:144px auto 0;border-radius:5px;text-align:center">
             <group>
               <h2 class="certifyT">您的认证失败！</h2>
               <p class="certifyP">请重新输入您的姓名和手机号 </p>
@@ -37,6 +38,7 @@
             </div>
           </div>
         </popup>
+      </div>
       </div>
   </div>
 </template>
