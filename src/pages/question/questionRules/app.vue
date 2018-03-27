@@ -1,6 +1,7 @@
 <template>
   <div>
       <div class="banImg"></div> 
+      <div class="padd">
       <div class="ruleCon">
         <div class="ruleTitle">问题录入规则</div>	  
         <div class="ruleItem">1、每位医生每录入1道题提交一次；</div>
@@ -10,6 +11,7 @@
             <div class="ruleItem"></div>
       </div>
       <x-button type="warn" class="submit" @click.native="handleSubmit">关闭</x-button>
+      </div>
   </div>
 </template>
 <script type='text/ecmascript-6'>

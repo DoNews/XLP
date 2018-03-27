@@ -1,26 +1,28 @@
 <template>
   <div>
       <div class="banImg"></div> 
-      <div class="ruleCon">
-        <div class="ruleTitle">能量小测试说明</div>	  
-        <div class="ruleItem">感谢你的参与，测测你的能量掌握值吧！ </div>
-        <div class="ruleItem">（以下测试题也会在知识竞赛测试中随即产生）</div>
-      </div>
-      <x-button type="warn" class="submit" @click.native="startTtest">开始答题</x-button>
-      <x-button @click.native="confirm">关闭</x-button>
-      <div>
-        <popup v-model="confirmShow" height="100%" is-transparent>
-          <div class="confirmCon">
-            <div>
-              <p class="certifyP">您确定要退出吗？</p>
-              <p class="certifyP">可能会错过很多精彩内容哦~</p>
+      <div class="padd">
+        <div class="ruleCon">
+          <div class="ruleTitle">能量小测试说明</div>	  
+          <div class="ruleItem">感谢你的参与，测测你的能量掌握值吧！ </div>
+          <div class="ruleItem">（以下测试题也会在知识竞赛测试中随即产生）</div>
+        </div>
+        <x-button type="warn" class="submit" @click.native="startTtest">开始答题</x-button>
+        <x-button @click.native="confirm">关闭</x-button>
+        <div>
+          <popup v-model="confirmShow" height="100%" is-transparent>
+            <div class="confirmCon">
+              <div>
+                <p class="certifyP">您确定要退出吗？</p>
+                <p class="certifyP">可能会错过很多精彩内容哦~</p>
+              </div>
+              <div style="padding:30px 20% 0;">
+                <x-button type="primary" @click.native="defShowClo">继续答题</x-button>
+                <x-button @click.native="defShowClo">狠心退出</x-button>
+              </div>
             </div>
-            <div style="padding:30px 20% 0;">
-              <x-button type="primary" @click.native="defShowClo">继续答题</x-button>
-              <x-button @click.native="defShowClo">狠心退出</x-button>
-            </div>
-          </div>
-        </popup>
+          </popup>
+        </div>
       </div>
   </div>
 
@@ -45,7 +47,7 @@ export default {
   },
   methods: {
     startTtest() {
-      location.href = './question1.html'
+      location.href = './testOne.html'
     },
     confirm() {
       this.confirmShow = true
@@ -58,24 +60,26 @@ export default {
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/reset.styl';
-.confirmCon{
-  width:80%;
-  background-color:#fff;
-  height:250px;
-  margin:30% auto 0;
-  border-radius:5px;
-  text-align:center;
-  padding-top:30px
+
+.confirmCon {
+  width: 80%;
+  background-color: #fff;
+  height: 250px;
+  margin: 30% auto 0;
+  border-radius: 5px;
+  text-align: center;
+  padding-top: 30px;
 }
+
 .weui-btn_primary {
   background-color: #bf1e2e !important;
   color: #ffffff !important;
   font-size: 18px !important;
 }
-button.weui-btn, input.weui-btn {
-    font-size: 16px!important;
-}
 
+button.weui-btn, input.weui-btn {
+  font-size: 16px !important;
+}
 
 .certifyT {
   font-size: 18px;
@@ -90,9 +94,11 @@ button.weui-btn, input.weui-btn {
   font-family: 'MicroSoft YaHei';
   margin: 15px 0;
 }
-.ruleCon{
+
+.ruleCon {
   text-align: center;
 }
+
 .ruleTitle {
   color: #231816;
   font-size: 18px;
@@ -133,6 +139,7 @@ button.weui-btn, input.weui-btn {
   border: 1px solid rgba(222, 222, 222, 0.3);
   background: #f5f5f5;
 }
+
 .submit {
   margin: 70px auto 30px;
   background: #bf1e2e;
@@ -140,10 +147,11 @@ button.weui-btn, input.weui-btn {
   border-radius: 1px !important;
   font-size: 16px !important;
 }
+
 .weui-btn_default {
-    color: #fff!important;
-    background-color: #ccc!important;
-    border: none!important;
-    border-radius: 0!important;
+  color: #fff !important;
+  background-color: #ccc !important;
+  border: none !important;
+  border-radius: 0 !important;
 }
 </style>
