@@ -3,22 +3,14 @@
     <div class="myProgress">
       我的进度
     </div>
-    <div class="proBg"><span style="float:left;color:#bf1e2e">已完成：{{num}}题</span><span  style="float:right">总题数：{{total}}题</span></div>
+    <div class="proBg"><span style="float:left;color:#bf1e2e">已完成：{{}}题</span><span  style="float:right">总题数：50题</span></div>
     <div class="myQuestionList">
       录入的问题
     </div>
     <div class="qsList">
-        <div class="qsItem">
-          <div class="itemTitle"> <span class="fillTime">填写时间 ：20180302</span><span class="questionnaire">问卷1</span></div>
-          <div class="itemCon">录入题干：心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？</div>
-        </div>
-        <div class="qsItem">
-          <div class="itemTitle"> <span class="fillTime">填写时间 ：20180302</span><span class="questionnaire">问卷1</span></div>
-          <div class="itemCon">录入题干：心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？</div>
-        </div>
-        <div class="qsItem">
-          <div class="itemTitle"> <span class="fillTime">填写时间 ：20180302</span><span class="questionnaire">问卷1</span></div>
-          <div class="itemCon">录入题干：心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？心内科目前国内哪个医院最强？</div>
+        <div class="qsItem" v-for="(item, index) in qsListBox"  :key="index" @click.native="goToDetail">
+          <div class="itemTitle"> <span class="fillTime">填写时间 ：{{item.add_time}}</span><span class="questionnaire">问卷{{index+1}}</span></div>
+          <div class="itemCon">{{item.wt}}</div>
         </div>
     </div>
   </div>
@@ -27,6 +19,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { get } from 'common/service/http.base'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -39,9 +32,34 @@ export default {
   },
   data() {
     return {
+      qsListBox: {}
     }
   },
+  mounted() {
+    this.getFullList()
+  },
   methods: {
+    getFullList() {
+      let url = '/api/myinfo/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      this.$vux.loading.show({
+        text: '获取中...'
+      })
+      get(url, params).then(res => {
+        this.$vux.loading.hide()
+        this.qsListBox = res.data
+      }, e => {
+        this.$vux.loading.hide()
+        this.$vux.alert.show({
+          title: '获取数据失败···'
+        })
+      })
+    },
+    goToDetail() {
+      // console.log(this.index)
+    }
   },
   created: {
   }
@@ -119,7 +137,8 @@ export default {
   font-size: 14px;
   color: #7b7b7b;
   margin: 10px 0;
+  height: 44px;
   box-sizing: border-box;
-  line-height: 20px;
+  line-height: 22px;
 }
 </style>
