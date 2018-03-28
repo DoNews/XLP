@@ -27,9 +27,8 @@ glob.sync("./src/pages/**/app.js").forEach(path => {
   entries[chunk] = path;
   chunks.push(chunk);
 });
-
 const debug = process.env.NODE_ENV !== "production";
-const devPort = 8088;
+const devPort = 8000;
 var config = {
   entry: entries,
   output: {
