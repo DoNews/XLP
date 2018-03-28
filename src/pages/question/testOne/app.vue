@@ -1,17 +1,17 @@
 <template>
   <div>
       <div class="banImg"></div> 
-        <div class="padd">
-      <div>
-        <div class="questionRules">
-        <span class="testOrder">1</span><span>{{qsData.title}}</span>
+      <div class="padd">
+        <div class="qsitem">
+          <div class="questionRules">
+            <span class="testOrder">{{curIndex+1}}</span><span>{{queslist[curIndex].title}}</span>
+          </div>
+          <div class="qsAnswerList"  v-for="(item, index) in queslist[curIndex].item"  :key="index">
+              <div class="qsAnswer">{{item.result}}</div>
+          </div>
         </div>
+        <x-button type="warn" class="submit" @click.native="submit">{{curIndex==2?'提交':'下一题'}}</x-button>
       </div>
-      <!-- <div class="qsAnswerList"  v-for="(item, index) in qsData.list"  :key="index">
-          <div class="qsAnswer">{{item}}</div>
-      </div> -->
-      <x-button type="warn" class="submit" @click.native="changeQs">下一题</x-button>
-        </div>
   </div>
 
 </template>
@@ -32,18 +32,18 @@ export default {
   data() {
     return {
       qsData: {},
-      queslist: [],
+      queslist: [
+        {title: '第一题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]},
+        {title: '第二题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]},
+        {title: '第三题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]}
+      ],
       curIndex: 0
     }
   },
   mounted() {
-    this.getQuestion()
+    // this.getQuestion()
   },
   methods: {
-    changeQs() {
-      this.curIndex++
-      this.qsData = this.queslist[this.curIndex][0]
-    },
     getQuestion() {
       let url = '/api/startgames/'
       let params = {
@@ -69,6 +69,18 @@ export default {
         //   title: '您已经答满三道题'
         // })
       })
+    },
+    submit() {
+      // if('是否选则答案') {
+      //   // 否
+      //   alert('请选择答案')
+      //   return
+      // }
+      if (this.curIndex < 2) {
+        this.curIndex++
+        // return
+      }
+      // post
     }
   }
 }

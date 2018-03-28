@@ -8,7 +8,7 @@
       录入的问题
     </div>
     <div class="qsList">
-        <div class="qsItem" v-for="(item, index) in qsListBox"  :key="index" @click.native="goToDetail">
+        <div class="qsItem" v-for="(item, index) in qsListBox"  :key="index" @click="goToDetail(item.pk)">
           <div class="itemTitle"> <span class="fillTime">填写时间 ：{{item.add_time}}</span><span class="questionnaire">问卷{{index+1}}</span></div>
           <div class="itemCon">{{item.wt}}</div>
         </div>
@@ -32,7 +32,12 @@ export default {
   },
   data() {
     return {
-      qsListBox: {}
+      qsListBox: [
+        {add_time: '2018-09-09', wt: '我是第一套？', pk: 20},
+        {add_time: '2018-09-09', wt: '我是第er套？', pk: 21},
+        {add_time: '2018-09-09', wt: '我是第san套？', pk: 22},
+        {add_time: '2018-09-09', wt: '我是第si套？', pk: 23}
+      ]
     }
   },
   mounted() {
@@ -57,8 +62,10 @@ export default {
         })
       })
     },
-    goToDetail() {
-      // console.log(this.index)
+    goToDetail(pk) {
+      location.href = `myQuestionDetail.html?pk=${pk}`
+      // this.$router.push('/detail.html')
+      console.log(pk)
     }
   },
   created: {

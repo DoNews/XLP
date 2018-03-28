@@ -29,6 +29,8 @@
 </template>
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
+import { queryUrl } from 'common/js/utils'
+import { post } from 'common/service/http.base'
 import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
@@ -66,6 +68,13 @@ export default {
     this.getQsTypeList()
   },
   methods: {
+    getQsTypeList() {
+      alert(queryUrl('pk'))
+      post('', {pk: queryUrl('pk')}).then(res => {
+      })
+      // get('', {pk: queryUrl('pk')}).then(function(res){
+      // })
+    },
     rules() {
       location.href = './questionRules.html'
     },

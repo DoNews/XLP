@@ -19,7 +19,7 @@
       <div class="questionTitle">请您录入选项（请在正确答案后打√）：</div>
       <div>
       <div class="inputBox" v-for="(item, index) in reqs"  :key="index">
-        <input type="text" v-model="item.title" class="inputtext" placeholder="请录入您的答案(必填)" />
+        <input type="text" v-model="item.title" class="inputtext" :placeholder="index>1?'请录入您的答案(选填)':'请录入您的答案(必填)'" />
         <p :class="item.isright ? 'inputcheckbox checked':'inputcheckbox'" @click="turn($event)" v-bind:id="index">√</p>
         <!-- <input type="checkbox"  style="height: 100%;display: none;" /> -->
 		  </div>
@@ -155,14 +155,6 @@ export default {
             })
             return
           }
-        } else if (this.qsPutListS === 2) {
-          let len = document.querySelectorAll('.inputcheckbox.checked').length
-          if (len >= 4) {
-            this.$vux.alert.show({
-              title: '多选至少选择两个正确答案哦'
-            })
-            return
-          }
         }
         this.reqs[index]['isright'] = true
       }
@@ -257,19 +249,35 @@ export default {
       console.log('2:', this.qsType1ListS)
       console.log('3:', this.qsPutListS)
       console.log('4:', this.titleArea)
-      if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
-        this.$vux.alert.show({
-          title: '您有信息未录入完成,无法提交',
-          onShow() {
-          },
-          onHide() {
-          }
-        })
-        return false
-      }
+      // if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
+      //   this.$vux.alert.show({
+      //     title: '您有信息未录入完成,无法提交',
+      //     onShow() {
+      //     },
+      //     onHide() {
+      //     }
+      //   })
+      //   return false
+      // }
       this.submit()
     },
     submit() {
+      // if (this.qsPutListS === 1) {
+      if (document.querySelectorAll('.inputcheckbox.checked').length < 1) {
+        this.$vux.alert.show({
+          title: '必须选择一个正确答案哦'
+        })
+        return
+      }
+      // } else if (this.qsPutListS === 2) {
+      //   let len = document.querySelectorAll('.inputcheckbox.checked').length
+      //   if (len < 2) {
+      //     this.$vux.alert.show({
+      //       title: '多选至少选择两个正确答案哦'
+      //     })
+      //     return
+      //   }
+      // }
       let url = '/api/putquestioninfo/'
       let params = {
         questionArea: this.qsAreaListS,
