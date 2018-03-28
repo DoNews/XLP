@@ -31,9 +31,10 @@ export default {
   },
   methods: {
     close() {
-      console.log('关闭')
+      this.$wechat.closeWindow()
     }
   }
+
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">

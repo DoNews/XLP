@@ -9,7 +9,7 @@
           <selector placeholder="请选择问题种类" v-model="qsType1ListS" title="请选择问题种类:" name="type" :options="qsType1List" ></selector>
         </group>
          <group>
-          <selector placeholder="请选择出题题型" v-model="qsPutListS" title="请选择出题题型:" name="typesub" :options="qsPutList" @on-change="onChange"></selector>
+          <selector placeholder="请选择出题题型" v-model="qsPutListS" title="请选择出题题型:" name="typesub" :options="qsPutList" @on-change="onTypeChange"></selector>
         </group>
       </div>
       <div class="questionTitle">请您录入题干</div>
@@ -75,7 +75,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
-import { post } from 'common/service/http.base'
+import { get, post } from 'common/service/http.base'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -115,18 +115,28 @@ export default {
     getQsTypeList() {
       let url = '/api/setquestioninfo/'
       let params = {
-        qstitleArea: this.titleArea
+        openid: localStorage.getItem('openid')
       }
       get(url, params).then(res => {
         if (res.status === -1) {
           this.$vux.alert(res.umsg)
           return
         }
-        if (res.user_type === 1) {
-          this.qsType1List = [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }, { key: 3, value: '学科发展' }, { key: 4, value: '治疗方法' }]
-        } else {
-          this.qsType1List = [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }]
-        }
+        // if (res.data.user_type === 1) {
+        let list = res.data.list
+        this.qsType1List = []
+        list.forEach(item => {
+          for (let key in item) {
+            this.qsType1List.push({
+              key: key,
+              value: item[key]
+            })
+            console.log(this.qsType1List)
+          }
+        })
+        // } else {
+        //   this.qsType1List = [{ key: 1, value: '基础理论' }, { key: 2, value: '推荐指南' }]
+        // }
       })
     },
     checkboxChange(a) {
@@ -146,9 +156,10 @@ export default {
             return
           }
         } else if (this.qsPutListS === 2) {
-          if (document.querySelectorAll('.inputcheckbox.checked').length >= 2) {
+          let len = document.querySelectorAll('.inputcheckbox.checked').length
+          if (len >= 4) {
             this.$vux.alert.show({
-              title: '多选最多选择两个正确答案哦'
+              title: '多选至少选择两个正确答案哦'
             })
             return
           }
@@ -160,7 +171,8 @@ export default {
     rules() {
       location.href = './questionRules.html'
     },
-    onChange(val) {
+    // 单选多选
+    onTypeChange(val) {
       if (val === 2) {
         this.reqs.push({ 'title': '', 'isright': false })
       } else {
@@ -170,6 +182,7 @@ export default {
     fiveClo() {
       this.fivesucShow = false
     },
+    // 题干查重
     onBlur() {
       let url = '/api/cmp/'
       let params = {
@@ -204,13 +217,37 @@ export default {
       this.titleArea = ''
     },
     sucShowClo() {
-      this.lurusucShow = false
       this.qsAreaListS = ''
       this.qsType1ListS = ''
       this.qsPutListS = ''
       this.req1 = ''
       this.req2 = ''
       this.titleArea = ''
+      let url = '/api/firstGame/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      get(url, params).then(res => {
+        console.log(res)
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          location.href = './energyTest.html'
+          this.lurusucShow = false
+          return
+        } else if (res.data.status === -1) {
+          this.lurusucShow = false
+        }
+        return false
+      }, e => {
+        this.$vux.alert.show({
+          title: '发现未知错误,请重试',
+          onShow() {
+          },
+          onHide() {
+          }
+        })
+        this.$vux.loading.hide()
+      })
     },
     defShowClo() {
       this.lurudefShow = false
@@ -218,8 +255,8 @@ export default {
     handleSubmit() {
       console.log('1:', this.qsAreaListS)
       console.log('2:', this.qsType1ListS)
-      console.log('3', this.qsPutListS)
-      console.log('4', this.titleArea)
+      console.log('3:', this.qsPutListS)
+      console.log('4:', this.titleArea)
       if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
         this.$vux.alert.show({
           title: '您有信息未录入完成,无法提交',

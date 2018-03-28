@@ -195,7 +195,7 @@ var config = {
     noInfo: false,
     proxy: {
       "/api": {
-        target: "http://172.29.97.11:8000",
+        target: "http://172.29.97.34:8000",
         changeOrigin: true
         // secure: false
       }

@@ -4,10 +4,13 @@
         <div class="padd">
       <div>
         <div class="questionRules">
-        <span class="testOrder">1</span>儿童能吃能气朗吗？
+        <span class="testOrder">1</span><span>{{qsData.title}}</span>
         </div>
       </div>
-      <x-button type="warn" class="submit" @click.native="startTtest">下一题</x-button>
+      <!-- <div class="qsAnswerList"  v-for="(item, index) in qsData.list"  :key="index">
+          <div class="qsAnswer">{{item}}</div>
+      </div> -->
+      <x-button type="warn" class="submit" @click.native="changeQs">下一题</x-button>
         </div>
   </div>
 
@@ -15,6 +18,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { post } from 'common/service/http.base'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -27,19 +31,61 @@ export default {
   },
   data() {
     return {
+      qsData: {},
+      queslist: [],
+      curIndex: 0
     }
   },
+  mounted() {
+    this.getQuestion()
+  },
   methods: {
-    startTtest() {
-      location.href = './testTwo.html'
+    changeQs() {
+      this.curIndex++
+      this.qsData = this.queslist[this.curIndex][0]
     },
-    confirm() {
+    getQuestion() {
+      let url = '/api/startgames/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      this.$vux.loading.show({
+        text: '请稍候...'
+      })
+      post(url, params).then(res => {
+        console.log(res)
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          this.queslist = res.data
+          this.qsData = this.queslist[this.curIndex][0]
+        } else {
+          this.$vux.alert.show({
+            title: res.data.umsg
+          })
+        }
+      }, e => {
+        this.$vux.loading.hide()
+        // this.$vux.alert.show({
+        //   title: '您已经答满三道题'
+        // })
+      })
     }
   }
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/reset.styl';
+
+.qsAnswer {
+  color: #231816;
+  font-size: 16px;
+  height: 40px;
+  line-height: 40px;
+  font-weight: bold;
+  background-color: #f5f5f5;
+  text-align: center;
+  margin: 15px 0;
+}
 
 .questionRules {
   height: 45px;

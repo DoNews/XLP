@@ -8,7 +8,7 @@
           <div class="ruleItem">（以下测试题也会在知识竞赛测试中随即产生）</div>
         </div>
         <x-button type="warn" class="submit" @click.native="startTtest">开始答题</x-button>
-        <x-button @click.native="confirm">关闭</x-button>
+        <x-button @click.native="confirmClo">关闭</x-button>
         <div>
           <popup v-model="confirmShow" height="100%" is-transparent>
             <div class="confirmCon">
@@ -17,7 +17,7 @@
                 <p class="certifyP">可能会错过很多精彩内容哦~</p>
               </div>
               <div style="padding:30px 20% 0;">
-                <x-button type="primary" @click.native="defShowClo">继续答题</x-button>
+                <x-button type="primary" @click.native="conShowClo">继续答题</x-button>
                 <x-button @click.native="defShowClo">狠心退出</x-button>
               </div>
             </div>
@@ -30,6 +30,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { get } from 'common/service/http.base'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -42,18 +43,50 @@ export default {
   },
   data() {
     return {
-      confirmShow: true
+      confirmShow: false
     }
   },
   methods: {
     startTtest() {
       location.href = './testOne.html'
     },
-    confirm() {
+    confirmClo() {
       this.confirmShow = true
     },
-    defShowClo() {
+    conShowClo() {
       this.confirmShow = false
+    },
+    defShowClo() {
+      let url = '/api/modify/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      get(url, params).then(res => {
+        console.log(res)
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          this.$vux.alert.show({
+            title: '今日不再进入能量小测试~~'
+          })
+          return
+        } else if (res.data.status === -1) {
+          this.$vux.alert.show({
+            title: res.data.umsg
+          })
+        }
+        return false
+      }, e => {
+        this.$vux.alert.show({
+          title: '您已经答满三道题',
+          onShow() {
+          },
+          onHide() {
+          }
+        })
+        this.$vux.loading.hide()
+      })
+      this.confirmShow = false
+      this.$wechat.closeWindow()
     }
   }
 }
@@ -121,6 +154,7 @@ button.weui-btn, input.weui-btn {
   background-color: #bf1e2e !important;
   color: #ffffff !important;
   font-size: 18px !important;
+  height: 40px !important;
 }
 
 .banImg {
@@ -141,9 +175,9 @@ button.weui-btn, input.weui-btn {
 }
 
 .submit {
-  margin: 70px auto 30px;
+  margin: 35px auto 30px;
   background: #bf1e2e;
-  height: 45px;
+  height: 40px;
   border-radius: 1px !important;
   font-size: 16px !important;
 }

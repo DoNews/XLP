@@ -4,7 +4,10 @@
       <div class="padd">
       <div>
         <div class="questionRules">
-        <span class="testOrder">2</span><span class="testCon">  能气朗安全吗？</span>
+        <span class="testOrder">2</span><span class="testCon"> {{qsData.title}}</span>
+        </div>
+        <div class="qsAnswerList"  v-for="(item, index) in qsData.list"  :key="index">
+          <div class="qsAnswer">{{item}}</div>
         </div>
       </div>
       <x-button type="warn" class="submit" @click.native="startTtest">下一题</x-button>
@@ -15,6 +18,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { post } from 'common/service/http.base'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -27,10 +31,59 @@ export default {
   },
   data() {
     return {
+      qsData: {}
     }
   },
+  mounted() {
+    this.getQuestion()
+  },
   methods: {
+    getQuestion() {
+      let url = '/api/startgames/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      console.log('params:', params)
+      this.$vux.loading.show({
+        text: '请稍候...'
+      })
+      post(url, params).then(res => {
+        console.log(res)
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          this.qsData = res.data
+        } else {
+          this.$vux.alert.show({
+            title: '您已经答满三道题'
+          })
+        }
+      }, e => {
+        this.$vux.loading.hide()
+        this.$vux.alert.show({
+          title: '您已经答满三道题'
+        })
+      })
+    },
     startTtest() {
+      let url = '/api/startgames/'
+      let params = {
+        openid: localStorage.getItem('openid'),
+        pk: this.qsData.pk
+      }
+      console.log('params:', params)
+      post(url, params).then(res => {
+        this.$vux.loading.hide()
+        if (res.data.status === 0) {
+          console.log(res.data)
+          // this.qsData = res.data
+        } else {
+          // this.$vux.alert.show({
+          //   title: res.data.umsg
+          // })
+        }
+      }, e => {
+        this.$vux.loading.hide()
+      })
       location.href = './testThree.html'
     },
     confirm() {
@@ -40,6 +93,17 @@ export default {
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/reset.styl';
+
+.qsAnswer {
+  color: #231816;
+  font-size: 16px;
+  height: 40px;
+  line-height: 40px;
+  font-weight: bold;
+  background-color: #f5f5f5;
+  text-align: center;
+  margin: 15px 0;
+}
 
 .questionRules {
   height: 45px;
