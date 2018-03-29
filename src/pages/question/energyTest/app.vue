@@ -138,6 +138,7 @@ button.weui-btn, input.weui-btn {
   font-weight: bold;
   text-align: center;
   margin: 15px auto;
+  letter-spacing: 1px;
 }
 
 .ruleItem {

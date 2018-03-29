@@ -3,7 +3,7 @@
     <div class="myProgress">
       我的进度
     </div>
-    <div class="proBg"><span style="float:left;color:#bf1e2e">已完成：{{}}题</span><span  style="float:right">总题数：50题</span></div>
+    <div class="proBg"><span style="float:left;color:#bf1e2e">已完成：{{num}}题</span><span  style="float:right">总题数：50题</span></div>
     <div class="myQuestionList">
       录入的问题
     </div>
@@ -32,12 +32,15 @@ export default {
   },
   data() {
     return {
-      qsListBox: [
-        {add_time: '2018-09-09', wt: '我是第一套？', pk: 20},
-        {add_time: '2018-09-09', wt: '我是第er套？', pk: 21},
-        {add_time: '2018-09-09', wt: '我是第san套？', pk: 22},
-        {add_time: '2018-09-09', wt: '我是第si套？', pk: 23}
-      ]
+      num: null,
+      // 此处为模拟数据
+      // qsListBox: [
+      //   { add_time: '2018-09-09', wt: '我是第一套？', pk: 20 },
+      //   { add_time: '2018-09-09', wt: '我是第er套？', pk: 21 },
+      //   { add_time: '2018-09-09', wt: '我是第san套？', pk: 22 },
+      //   { add_time: '2018-09-09', wt: '我是第si套？', pk: 23 }
+      // ]
+      qsListBox: []
     }
   },
   mounted() {
@@ -54,7 +57,8 @@ export default {
       })
       get(url, params).then(res => {
         this.$vux.loading.hide()
-        this.qsListBox = res.data
+        this.qsListBox = res.data.data
+        this.num = res.data.num
       }, e => {
         this.$vux.loading.hide()
         this.$vux.alert.show({

@@ -4,10 +4,10 @@
       <div class="padd">
         <div class="qsitem">
           <div class="questionRules">
-            <span class="testOrder">{{curIndex+1}}</span><span>{{queslist[curIndex].title}}</span>
+            <span class="testOrder">{{curIndex+1}}</span><span>{{queslist.title}}</span>
           </div>
-          <div class="qsAnswerList"  v-for="(item, index) in queslist[curIndex].item"  :key="index">
-              <div class="qsAnswer">{{item.result}}</div>
+          <div class="qsAnswerList"  v-for="(item, index) in queslist.item"  :key="index">
+              <div class="qsAnswer" :class="{checked:index === curCheck,bgimg:item.isright && curCheck !== -1}"  @click="checked(index)" v-bind:id="index" >{{item.result}}</div>
           </div>
         </div>
         <x-button type="warn" class="submit" @click.native="submit">{{curIndex==2?'提交':'下一题'}}</x-button>
@@ -31,62 +31,102 @@ export default {
   },
   data() {
     return {
-      qsData: {},
-      queslist: [
-        {title: '第一题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]},
-        {title: '第二题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]},
-        {title: '第三题?', pk: 4, item: [{result: '我是答案1', isright: false}, {result: '我是答案2', isright: false}, {result: '我是答案3', isright: false}, {result: '我是答案4', isright: false}]}
-      ],
-      curIndex: 0
+      queslist: [],
+      curIndex: 0,
+      curCheck: -1
     }
   },
-  mounted() {
-    // this.getQuestion()
+  created() {
+    this.getQuestion()
   },
   methods: {
+    // 绑定类名
+    checked(index) {
+      if (this.curCheck !== -1) {
+        this.$vux.toast.show({
+          text: '只能选择一个答案'
+        })
+        return
+      }
+      this.curCheck = index
+    },
     getQuestion() {
       let url = '/api/startgames/'
       let params = {
         openid: localStorage.getItem('openid')
+
       }
       this.$vux.loading.show({
         text: '请稍候...'
       })
       post(url, params).then(res => {
-        console.log(res)
         this.$vux.loading.hide()
-        if (res.data.status === 0) {
-          this.queslist = res.data
-          this.qsData = this.queslist[this.curIndex][0]
-        } else {
+        let that = this
+        if (res.data.status === -1) {
           this.$vux.alert.show({
-            title: res.data.umsg
+            title: '每人每天只能参与一次小测试',
+            onHide() {
+              that.$wechat.closeWindow()
+            }
           })
+          return false
         }
+        // debugger
+        this.qsData = res.data
+        this.queslist = res.data.data[this.curIndex]
       }, e => {
         this.$vux.loading.hide()
-        // this.$vux.alert.show({
-        //   title: '您已经答满三道题'
-        // })
+        this.$vux.alert.show({
+          title: '加载超时'
+        })
       })
     },
     submit() {
-      // if('是否选则答案') {
-      //   // 否
-      //   alert('请选择答案')
-      //   return
-      // }
+      let checkLen = document.querySelectorAll("div[class='qsAnswer checked']").length
+      console.log('选定答案的长度' + checkLen)
+      if (checkLen === 0) {
+        this.$vux.alert.show({
+          title: '必须选择答案才能提交'
+        })
+        return
+      }
       if (this.curIndex < 2) {
         this.curIndex++
-        // return
+        this.queslist = this.qsData.data[this.curIndex]
+        this.curCheck = -1
+      } else {
+        let url = '/api/commit/'
+        let params = {
+          openid: localStorage.getItem('openid')
+          // sum: ''
+          // sum_ok: ''
+        }
+        post(url, params).then(res => {
+          if (res.data.status === 0) {
+            location.href = './testClose.html'
+          } else {
+            this.$vux.alert.show({
+              title: res.data.umsg
+            })
+          }
+        })
       }
-      // post
     }
   }
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import '~common/stylus/reset.styl';
+
+.checked {
+  border: 2px solid #bf1e2e;
+}
+
+.bgimg {
+  background: url('./img/gou.png') left 10px top 10px no-repeat;
+  color: #bf1e2e !important;
+  background-size: 29px 19px;
+}
 
 .qsAnswer {
   color: #231816;

@@ -21,9 +21,7 @@
       <div class="inputBox" v-for="(item, index) in reqs"  :key="index">
         <input type="text" v-model="item.title" class="inputtext" :placeholder="index>1?'请录入您的答案(选填)':'请录入您的答案(必填)'" />
         <p :class="item.isright ? 'inputcheckbox checked':'inputcheckbox'" @click="turn($event)" v-bind:id="index">√</p>
-        <!-- <input type="checkbox"  style="height: 100%;display: none;" /> -->
 		  </div>
-  
       </div>
       <x-button type="warn" class="submit" @click.native="handleSubmit">提交</x-button>
       <div>
@@ -94,6 +92,7 @@ export default {
   },
   data() {
     return {
+      totalData: {},
       fivesucShow: false,
       lurusucShow: false,
       lurudefShow: false,
@@ -122,16 +121,21 @@ export default {
           this.$vux.alert(res.umsg)
           return
         }
+        // 判断用户是否为vip
         // if (res.data.user_type === 1) {
+        // debugger
+        this.totalData = res.data
+        console.log(this.totalData)
         let list = res.data.list
+        // 置空数组，防止data内的影响
         this.qsType1List = []
         list.forEach(item => {
           for (let key in item) {
             this.qsType1List.push({
               key: key,
+              // 此处的item[key]是指该key对应的value vue中的写法
               value: item[key]
             })
-            console.log(this.qsType1List)
           }
         })
         // } else {
@@ -171,8 +175,14 @@ export default {
         this.reqs.splice(4, 1)
       }
     },
+    // 答满五道题关闭
     fiveClo() {
       this.fivesucShow = false
+      this.qsAreaListS = ''
+      this.qsType1ListS = ''
+      this.qsPutListS = ''
+      this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
+      this.titleArea = ''
     },
     // 题干查重
     onBlur() {
@@ -199,48 +209,30 @@ export default {
         this.$vux.loading.hide()
       })
     },
+    // 成功继续录入
     sucShowPro() {
       this.lurusucShow = false
       this.qsAreaListS = ''
       this.qsType1ListS = ''
       this.qsPutListS = ''
-      this.req1 = ''
-      this.req2 = ''
+      this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
     },
+    // 成功之后关闭
     sucShowClo() {
       this.qsAreaListS = ''
       this.qsType1ListS = ''
       this.qsPutListS = ''
-      this.req1 = ''
-      this.req2 = ''
+      this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
-      let url = '/api/firstGame/'
-      let params = {
-        openid: localStorage.getItem('openid')
+      if (this.totalData.game_count === 0) {
+        location.href = './energyTest.html'
+        this.lurusucShow = false
+      } else {
+        this.lurusucShow = false
       }
-      get(url, params).then(res => {
-        console.log(res)
-        this.$vux.loading.hide()
-        if (res.data.status === 0) {
-          location.href = './energyTest.html'
-          this.lurusucShow = false
-          return
-        } else if (res.data.status === -1) {
-          this.lurusucShow = false
-        }
-        return false
-      }, e => {
-        this.$vux.alert.show({
-          title: '发现未知错误,请重试',
-          onShow() {
-          },
-          onHide() {
-          }
-        })
-        this.$vux.loading.hide()
-      })
     },
+    // 失败时关闭
     defShowClo() {
       this.lurudefShow = false
     },
@@ -249,16 +241,22 @@ export default {
       console.log('2:', this.qsType1ListS)
       console.log('3:', this.qsPutListS)
       console.log('4:', this.titleArea)
-      // if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
-      //   this.$vux.alert.show({
-      //     title: '您有信息未录入完成,无法提交',
-      //     onShow() {
-      //     },
-      //     onHide() {
-      //     }
-      //   })
-      //   return false
-      // }
+      if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
+        this.$vux.alert.show({
+          title: '您有信息未录入完成,无法提交',
+          onShow() {
+          },
+          onHide() {
+          }
+        })
+        return false
+      }
+      if (this.reqs[0].title === '' || this.reqs[1].title === '') {
+        this.$vux.alert.show({
+          title: '您有必填题目未填写，请完全填写后提交'
+        })
+        return
+      }
       this.submit()
     },
     submit() {
@@ -269,6 +267,7 @@ export default {
         })
         return
       }
+      // 以后该需求可能会改为多选题最少选择两个正确答案，这需要判断题目类型
       // } else if (this.qsPutListS === 2) {
       //   let len = document.querySelectorAll('.inputcheckbox.checked').length
       //   if (len < 2) {
@@ -459,6 +458,7 @@ export default {
   color: #fff;
   font-family: $font-family;
   font-weight: bolder;
+  margin-top: -3px;
 }
 
 .weui-select {

@@ -2,15 +2,18 @@
   <div class="padd">
       <div class="questionRules" @click='rules'>问题录入规则 <span>!</span>	  </div> 
       <div class="questionForm">
-        <group>
-          <selector placeholder="问题领域" v-model="qsAreaListS" title="问题领域:" name="area" :options="qsAreaList"></selector>
-        </group>
-         <group>
-          <selector placeholder="问题种类" v-model="qsType1ListS" title="问题种类:" name="type" :options="qsType1List" ></selector>
-        </group>
-         <group>
-          <selector placeholder="出题题型" v-model="qsPutListS" title="出题题型:" name="typesub" :options="qsPutList" @on-change="onTypeChange"></selector>
-        </group>
+          <div class="qsAreaBox">
+              <div class="qsAreaTitle">问题领域</div>
+              <div class="qsAreaCon">{{qsAreaListS}}</div>
+          </div>
+           <div class="qsAreaBox">
+              <div class="qsAreaTitle">问题种类</div>
+              <div class="qsAreaCon">{{qsType1ListS}}</div>
+          </div>
+           <div class="qsAreaBox">
+              <div class="qsAreaTitle">出题题型</div>
+              <div class="qsAreaCon">{{qsPutListS}}</div>
+          </div>
       </div>
       <div class="questionTitle">您录入的题干</div>
       <group>
@@ -19,8 +22,8 @@
       <div class="questionTitle">您录入的选项（打√的为正确答案）：</div>
       <div>
       <div class="inputBox" v-for="(item, index) in reqs"  :key="index">
-        <input type="text" v-model="item.title" :class="item.isright ? 'inputtext checkedinput':'inputtext'" placeholder="您录入的答案" />
-        <p :class="item.isright ? 'inputcheckbox checked':'inputcheckbox'" @click="turn($event)" v-bind:id="index">√</p>
+        <div :class="item.is_ok ? 'inputtext checkedinput':'inputtext'">{{item.result}}</div>
+        <p :class="item.is_ok ? 'inputcheckbox checked':'inputcheckbox'">√</p>
 		  </div>
   
       </div>
@@ -30,7 +33,7 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { queryUrl } from 'common/js/utils'
-import { post } from 'common/service/http.base'
+import { get } from 'common/service/http.base'
 import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
@@ -50,18 +53,15 @@ export default {
   },
   data() {
     return {
-      fivesucShow: false,
-      lurusucShow: false,
-      lurudefShow: false,
-      qsAreaList: {},
-      qsType1List: [],
+      // qsAreaList: [],
+      // qsType1List: [],
+      // qsPutList: [],
+      // qsType2ListS: null,
       titleArea: '',
-      qsPutList: {},
       qsAreaListS: null,
       qsType1ListS: null,
-      qsType2ListS: null,
       qsPutListS: null,
-      reqs: [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
+      reqs: [{ 'result': '', 'is_ok': true }, { 'result': '', 'is_ok': false }, { 'result': '', 'is_ok': false }, { 'result': '', 'is_ok': false }]
     }
   },
   mounted() {
@@ -69,9 +69,25 @@ export default {
   },
   methods: {
     getQsTypeList() {
-      alert(queryUrl('pk'))
-      post('', {pk: queryUrl('pk')}).then(res => {
+      // debugger
+      console.log(queryUrl('pk'))
+      let url = '/api/detail/'
+      let pkvalue = queryUrl('pk')
+      let params = {
+        pk: pkvalue
+      }
+      get(url, params).then(res => {
+        console.log(res.data)
+        this.qsAreaListS = res.data.info[0].qsAreaListS
+        this.qsType1ListS = res.data.info[0].qsType1ListS
+        this.qsPutListS = res.data.info[0].qsPutListS
+        this.titleArea = res.data.info[0].titleArea
+        this.reqs = res.data.info[0].reqs
       })
+      // 参数直接写的格式
+      // get('/api/detail/ ', { pk: queryUrl('pk') }).then(res => {
+      // })
+      // 不使用es6语法的书写格式
       // get('', {pk: queryUrl('pk')}).then(function(res){
       // })
     },
@@ -79,7 +95,8 @@ export default {
       location.href = './questionRules.html'
     },
     handleSubmit() {
-      this.$wechat.closeWindow()
+      // this.$wechat.closeWindow()
+      window.history.go(-1)
     }
   },
   created() {
@@ -90,6 +107,33 @@ export default {
 @import '~common/stylus/reset.styl';
 @import '~common/stylus/variable.styl';
 
+// 模版渲染开始
+.qsAreaBox {
+  display: flex;
+  height: 45px;
+  margin: 10px 0;
+  line-height: 45px;
+  background-color: #f5f5f5;
+}
+
+.qsAreaTitle {
+  flex: 0 0 35%;
+  text-align: left;
+  box-sizing: border-box;
+  padding-left: 15px;
+  -webkit-box-pack: center;
+  font-size: 16px;
+}
+
+.qsAreaCon {
+  flex: 0 0 65%;
+  text-align: center;
+  box-sizing: border-box;
+  -webkit-box-pack: center;
+  font-size: 16px;
+}
+
+// 模版渲染结束
 .checkedinput {
   color: #bf1e2e;
 }
@@ -124,6 +168,7 @@ export default {
   width: calc(100vw - 45px);
   background-color: #f5f5f5;
   border: none;
+  line-height: 45px;
   font-size: 16px;
   padding-left: 15px;
   outline: none;
@@ -228,6 +273,7 @@ export default {
   line-height: 22px;
   text-align: center;
   color: #fff;
+  margin-bottom: 4px;
   font-family: $font-family;
   font-weight: bolder;
 }
