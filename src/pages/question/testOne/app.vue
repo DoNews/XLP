@@ -7,9 +7,13 @@
             <span class="testOrder">{{curIndex+1}}</span><span>{{queslist.title}}</span>
           </div>
           <div class="qsAnswerList"  v-for="(item, index) in queslist.item"  :key="index">
-              <div class="qsAnswer" :class="{checked:index === curCheck,bgimg:item.isright && curCheck !== -1}"  @click="checked(index, item.isright)" v-bind:id="index" >{{item.result}}</div>
+            <!--  && curCheck !== -1 -->
+              <div class="qsAnswer" :class="{checked:item.isChecked,bgimg:item.isright && showTrue}"  
+                  @click="checked(index, item.isright,$event)" 
+                  v-bind:id="index" >{{item.result+item.isChecked}}</div>
           </div>
         </div>
+        <x-button type="warn" class="submit" @click.native="showTrues">显示正确答案</x-button>
         <x-button type="warn" class="submit" @click.native="submit">{{curIndex==2?'提交':'下一题'}}</x-button>
       </div>
   </div>
@@ -19,6 +23,7 @@
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { post } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
@@ -26,6 +31,7 @@ Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 
 export default {
+  mixins: [Auth],
   components: {
     XButton,
     Popup
@@ -34,34 +40,63 @@ export default {
     return {
       queslist: [],
       curIndex: 0,
-      curCheck: -1,
+      curCheck: [],
       qsData: {},
-      sum_ok: 0
+      sum_ok: 0,
+      showTrue: false
     }
   },
   created() {
+    this.checkOpenId()
     this.getQuestion()
   },
   methods: {
     // 绑定类名
-    checked(index, isright) {
-      if (this.curCheck !== -1) {
+    showTrues() {
+      if (this.curCheck.length === 0) {
         this.$vux.toast.show({
-          text: '只能选择一个答案',
+          text: '请选择后再查看',
           type: 'warn'
         })
         return
       }
+      this.showTrue = true
+    },
+    checked(index, isright, $event) {
+      console.log(this.queslist)
+      if (this.showTrue) {
+        this.$vux.toast.show({
+          text: '您已完成该题',
+          type: 'warn'
+        })
+        return
+      }
+      console.log(this.curCheck.length)
+      if (!this.queslist.is_Double) {
+        // 单选```
+        if (this.curCheck.length === 0) {
+          this.curCheck.push(index)
+          this.$set(this.queslist.item[index], 'isChecked', true)
+          // this.queslist.item[index].isChecked = true
+          console.log(this.queslist.item[index])
+          return
+        }
+        this.$vux.toast.show({
+          text: '只能选择一项',
+          type: 'warn'
+        })
+      } else {
+        // 多选
+
+      }
       if (isright) {
         this.sum_ok++
       }
-      this.curCheck = index
     },
     getQuestion() {
       let url = '/api/startgames/'
       let params = {
         openid: localStorage.getItem('openid')
-
       }
       this.$vux.loading.show({
         text: '请稍候...'
@@ -78,79 +113,13 @@ export default {
           })
           return false
         }
-        // debugger
         this.qsData = res.data
-        this.queslist = res.data.data[this.curIndex]
+        let ques = res.data.data[this.curIndex]
+        ques.item.forEach(item => {
+          item.isChecked = false
+        })
+        this.queslist = ques
       }, e => {
-        this.qsData = {data:[
-          {
-	            "title": "测试1+3=？",
-	            "pk": 3,
-	            "item": [
-                {
-                  result:'1111111111',
-                  isright:true
-                },
-                {
-                  result:'2222222222',
-                  isright:false
-                },
-                {
-                  result:'333333333',
-                  isright:false
-                },
-                {
-                  result:'44444444444',
-                  isright:false
-                }
-              ]
-	        },
-	        {
-	            "title": "测试1+2=？",
-	            "pk": 2,
-	            "item": [
-                {
-                  result:'1111111111',
-                  isright:true
-                },
-                {
-                  result:'2222222222',
-                  isright:false
-                },
-                {
-                  result:'333333333',
-                  isright:false
-                },
-                {
-                  result:'44444444444',
-                  isright:false
-                }
-              ]
-	        },
-	        {
-	            "title": "测试1+4=？",
-	            "pk": 4,
-	            "item": [
-                {
-                  result:'1111111111',
-                  isright:true
-                },
-                {
-                  result:'2222222222',
-                  isright:false
-                },
-                {
-                  result:'333333333',
-                  isright:false
-                },
-                {
-                  result:'44444444444',
-                  isright:false
-                }
-              ]
-	        }
-        ]}
-        this.queslist = this.qsData.data[this.curIndex]
         this.$vux.loading.hide()
         this.$vux.alert.show({
           title: '加载超时'
@@ -158,7 +127,8 @@ export default {
       })
     },
     submit() {
-      let checkLen = document.querySelectorAll("div.checked").length
+      this.showTrue = false
+      let checkLen = document.querySelectorAll('div.checked').length
       console.log('选定答案的长度' + checkLen)
       if (checkLen === 0) {
         this.$vux.alert.show({
@@ -166,10 +136,13 @@ export default {
         })
         return
       }
-      if (this.curIndex < 2) {
+      if (this.curIndex < this.qsData.data.length - 1) {
         this.curIndex++
         this.queslist = this.qsData.data[this.curIndex]
-        this.curCheck = -1
+        this.queslist.item.forEach(item => {
+          item.isChecked = false
+        })
+        this.curCheck = []
       } else {
         let url = '/api/commit/'
         let params = {
@@ -216,8 +189,7 @@ export default {
 }
 
 .questionRules {
-  height: 45px;
-  line-height: 45px;
+  line-height: 1.5;
   text-align: left;
   padding-left: 10px;
   font-size: 16px;

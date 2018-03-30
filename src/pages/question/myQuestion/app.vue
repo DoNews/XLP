@@ -20,12 +20,14 @@
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { get } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [Auth],
   components: {
     XButton,
     Popup
@@ -33,15 +35,11 @@ export default {
   data() {
     return {
       num: null,
-      // 此处为模拟数据
-      // qsListBox: [
-      //   { add_time: '2018-09-09', wt: '我是第一套？', pk: 20 },
-      //   { add_time: '2018-09-09', wt: '我是第er套？', pk: 21 },
-      //   { add_time: '2018-09-09', wt: '我是第san套？', pk: 22 },
-      //   { add_time: '2018-09-09', wt: '我是第si套？', pk: 23 }
-      // ]
       qsListBox: []
     }
+  },
+  created() {
+    this.checkOpenId()
   },
   mounted() {
     this.getFullList()
@@ -71,8 +69,6 @@ export default {
       // this.$router.push('/detail.html')
       console.log(pk)
     }
-  },
-  created: {
   }
 }
 </script>

@@ -31,12 +31,14 @@
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { get } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [Auth],
   components: {
     XButton,
     Popup
@@ -62,7 +64,6 @@ export default {
         openid: localStorage.getItem('openid')
       }
       get(url, params).then(res => {
-        console.log(res)
         this.$vux.loading.hide()
         if (res.data.status === 0) {
           this.$vux.alert.show({
@@ -87,6 +88,9 @@ export default {
       })
       this.confirmShow = false
       this.$wechat.closeWindow()
+    },
+    created() {
+      this.checkOpenId()
     }
   }
 }

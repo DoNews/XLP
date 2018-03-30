@@ -74,12 +74,14 @@
 import Vue from 'vue'
 import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 import { get, post } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [Auth],
   components: {
     Checklist,
     XTextarea,
@@ -315,6 +317,7 @@ export default {
     }
   },
   created() {
+    this.checkOpenId()
   }
 }
 </script>

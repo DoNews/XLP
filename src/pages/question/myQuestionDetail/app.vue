@@ -34,6 +34,7 @@
 import Vue from 'vue'
 import { queryUrl } from 'common/js/utils'
 import { get } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 import { Checklist, XTextarea, Selector, Popup, Cell, XButton, AlertPlugin, XInput, Group, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
@@ -41,6 +42,7 @@ Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [Auth],
   components: {
     Checklist,
     XTextarea,
@@ -53,10 +55,6 @@ export default {
   },
   data() {
     return {
-      // qsAreaList: [],
-      // qsType1List: [],
-      // qsPutList: [],
-      // qsType2ListS: null,
       titleArea: '',
       qsAreaListS: null,
       qsType1ListS: null,
@@ -69,7 +67,6 @@ export default {
   },
   methods: {
     getQsTypeList() {
-      // debugger
       console.log(queryUrl('pk'))
       let url = '/api/detail/'
       let pkvalue = queryUrl('pk')
@@ -84,12 +81,6 @@ export default {
         this.titleArea = res.data.info[0].titleArea
         this.reqs = res.data.info[0].reqs
       })
-      // 参数直接写的格式
-      // get('/api/detail/ ', { pk: queryUrl('pk') }).then(res => {
-      // })
-      // 不使用es6语法的书写格式
-      // get('', {pk: queryUrl('pk')}).then(function(res){
-      // })
     },
     rules() {
       location.href = './questionRules.html'
@@ -100,6 +91,7 @@ export default {
     }
   },
   created() {
+    this.checkOpenId()
   }
 }
 </script>
