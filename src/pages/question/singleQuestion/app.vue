@@ -239,6 +239,11 @@ export default {
     },
     // 失败时关闭
     defShowClo() {
+      this.qsAreaListS = ''
+      this.qsType1ListS = ''
+      this.qsPutListS = ''
+      this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
+      this.titleArea = ''
       this.lurudefShow = false
     },
     handleSubmit() {

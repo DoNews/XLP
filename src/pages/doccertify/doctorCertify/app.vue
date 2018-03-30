@@ -69,6 +69,9 @@ export default {
       phone: ''
     }
   },
+  created() {
+    this.checkOpenId()
+  },
   methods: {
     sucShowPro() {
       this.sucShow = false
@@ -133,9 +136,6 @@ export default {
         this.defShow = true
       })
     }
-  },
-  created() {
-    this.checkOpenId()
   }
 }
 </script>

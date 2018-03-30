@@ -31,7 +31,6 @@ export default {
   },
   methods: {
     close() {
-      window.history.go(-1)
       this.$wechat.closeWindow()
     }
   }

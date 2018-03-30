@@ -74,8 +74,10 @@ export default {
       let url = '/api/detail/'
       let pkvalue = queryUrl('pk')
       let params = {
+        openid: localStorage.getItem('openid'),
         pk: pkvalue
       }
+      console.log(pkvalue)
       get(url, params).then(res => {
         console.log(res.data)
         this.qsAreaListS = res.data.info[0].qsAreaListS

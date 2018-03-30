@@ -28,7 +28,7 @@ glob.sync("./src/pages/**/app.js").forEach(path => {
   chunks.push(chunk);
 });
 const debug = process.env.NODE_ENV !== "production";
-const devPort = 8000;
+const devPort = 8088;
 var config = {
   entry: entries,
   output: {
@@ -69,7 +69,8 @@ var config = {
                   },
                   "stylus-loader"
                 ],
-                fallback: "style-loader"
+                fallback: "style-loader",
+                publicPath: "../../../"
               })
             ),
             postcss: ExtractTextPlugin.extract({
@@ -173,7 +174,7 @@ var config = {
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.BannerPlugin("create by 木メメ木+大"),
+    new webpack.BannerPlugin("create by zyp"),
     new CommonsChunkPlugin({
       name: "vendors",
       filename: "assets/js/vendors.js",
@@ -195,7 +196,8 @@ var config = {
     noInfo: false,
     proxy: {
       "/api": {
-        target: "http://172.29.97.34:8000",
+        // target: "http://172.29.97.34:8000",
+        target: "http://118.31.16.74",
         changeOrigin: true
         // secure: false
       }

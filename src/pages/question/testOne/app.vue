@@ -13,7 +13,7 @@
                   v-bind:id="index" >{{item.result}}</div>
           </div>
         </div>
-        <x-button type="warn" :disabled = 'showTrue' class="submit" @click.native="showTrues">选择后可点击查看正确答案</x-button>
+        <x-button type="warn" :disabled = 'showTrue' class="submit" @click.native="showTrues">点击查看正确答案</x-button>
         <x-button type="warn" class="submit" @click.native="submit">{{curIndex==2?'提交':'下一题'}}</x-button>
       </div>
   </div>
@@ -162,8 +162,8 @@ export default {
           sum: this.qsData.data.length,
           sum_ok: this.sum_ok
         }
-        console.log('答题数：' + this.sum)
-        console.log('正确题数' + this.sum_ok)
+        // console.log('答题数：' + this.sum)
+        // console.log('正确题数' + this.sum_ok)
         post(url, params).then(res => {
           if (res.data.status === 0) {
             location.href = './testClose.html'
