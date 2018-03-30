@@ -188,8 +188,7 @@ var config = {
     extractCSS
   ],
   devServer: {
-    // host: "127.0.0.1",
-    host: "172.29.97.26",
+    host: "127.0.0.1",
     port: devPort,
     hot: true,
     historyApiFallback: false,

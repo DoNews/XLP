@@ -62,6 +62,9 @@ export default {
       reqs: [{ 'result': '', 'is_ok': true }, { 'result': '', 'is_ok': false }, { 'result': '', 'is_ok': false }, { 'result': '', 'is_ok': false }]
     }
   },
+  created() {
+    this.checkOpenId()
+  },
   mounted() {
     this.getQsTypeList()
   },
@@ -89,9 +92,6 @@ export default {
       // this.$wechat.closeWindow()
       window.history.go(-1)
     }
-  },
-  created() {
-    this.checkOpenId()
   }
 }
 </script>

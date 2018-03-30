@@ -48,6 +48,9 @@ export default {
       confirmShow: false
     }
   },
+  created() {
+    this.checkOpenId()
+  },
   methods: {
     startTtest() {
       location.href = './testOne.html'
@@ -88,9 +91,6 @@ export default {
       })
       this.confirmShow = false
       this.$wechat.closeWindow()
-    },
-    created() {
-      this.checkOpenId()
     }
   }
 }

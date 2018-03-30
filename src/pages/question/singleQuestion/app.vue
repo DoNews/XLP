@@ -112,6 +112,9 @@ export default {
   mounted() {
     this.getQsTypeList()
   },
+  created() {
+    this.checkOpenId()
+  },
   methods: {
     getQsTypeList() {
       let url = '/api/setquestioninfo/'
@@ -315,9 +318,6 @@ export default {
         this.lurudefShow = true
       })
     }
-  },
-  created() {
-    this.checkOpenId()
   }
 }
 </script>

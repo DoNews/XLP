@@ -10,10 +10,10 @@
             <!--  && curCheck !== -1 -->
               <div class="qsAnswer" :class="{checked:item.isChecked,bgimg:item.isright && showTrue}"  
                   @click="checked(index, item.isright,$event)" 
-                  v-bind:id="index" >{{item.result+item.isChecked}}</div>
+                  v-bind:id="index" >{{item.result}}</div>
           </div>
         </div>
-        <x-button type="warn" class="submit" @click.native="showTrues">显示正确答案</x-button>
+        <x-button type="warn" :disabled = 'showTrue' class="submit" @click.native="showTrues">选择后可点击查看正确答案</x-button>
         <x-button type="warn" class="submit" @click.native="submit">{{curIndex==2?'提交':'下一题'}}</x-button>
       </div>
   </div>
@@ -60,10 +60,20 @@ export default {
         })
         return
       }
+      if (this.queslist.is_Double) {
+        let tag = true
+        this.queslist.item.forEach(item => {
+          if (item.isright && !item.isChecked) {
+            tag = false
+          }
+        })
+        if (tag) {
+          this.sum_ok++
+        }
+      }
       this.showTrue = true
     },
     checked(index, isright, $event) {
-      console.log(this.queslist)
       if (this.showTrue) {
         this.$vux.toast.show({
           text: '您已完成该题',
@@ -71,26 +81,28 @@ export default {
         })
         return
       }
-      console.log(this.curCheck.length)
       if (!this.queslist.is_Double) {
-        // 单选```
+        // 单选
         if (this.curCheck.length === 0) {
           this.curCheck.push(index)
-          this.$set(this.queslist.item[index], 'isChecked', true)
-          // this.queslist.item[index].isChecked = true
-          console.log(this.queslist.item[index])
+          let item = this.queslist.item[index]
+          item.isChecked = true
+          this.$set(this.queslist.item, index, item)
+          if (isright) {
+            this.sum_ok++
+          }
           return
         }
         this.$vux.toast.show({
-          text: '只能选择一项',
+          text: '单选题',
           type: 'warn'
         })
       } else {
         // 多选
-
-      }
-      if (isright) {
-        this.sum_ok++
+        this.curCheck.push(index)
+        let item = this.queslist.item[index]
+        item.isChecked = true
+        this.$set(this.queslist.item, index, item)
       }
     },
     getQuestion() {
@@ -127,9 +139,8 @@ export default {
       })
     },
     submit() {
-      this.showTrue = false
+      // this.showTrue = false
       let checkLen = document.querySelectorAll('div.checked').length
-      console.log('选定答案的长度' + checkLen)
       if (checkLen === 0) {
         this.$vux.alert.show({
           title: '必须选择答案才能提交'
@@ -143,6 +154,7 @@ export default {
           item.isChecked = false
         })
         this.curCheck = []
+        this.showTrue = false
       } else {
         let url = '/api/commit/'
         let params = {
@@ -150,6 +162,8 @@ export default {
           sum: this.qsData.data.length,
           sum_ok: this.sum_ok
         }
+        console.log('答题数：' + this.sum)
+        console.log('正确题数' + this.sum_ok)
         post(url, params).then(res => {
           if (res.data.status === 0) {
             location.href = './testClose.html'
