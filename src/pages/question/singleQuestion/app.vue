@@ -30,7 +30,7 @@
             <group>
               <h2 class="certifyT">恭喜您提交成功！</h2>
               <p class="certifyP">您可选择继续录入或关闭，</p>
-              <p class="certifyP" v-model="notfrist" > 如点击关闭，进入能量小测试,</p>
+              <p class="certifyP" v-show="showTips"> 首次点击关闭，进入能量小测试,</p>
             </group>
             <div style="padding:0 15%;box-sizing:border-box">
               <x-button type="primary" @click.native="sucShowPro" >继续录入</x-button>
@@ -94,7 +94,7 @@ export default {
   },
   data() {
     return {
-      notfrist: true,
+      showTips: true,
       totalData: {},
       fivesucShow: false,
       lurusucShow: false,
@@ -131,6 +131,10 @@ export default {
         // if (res.data.user_type === 1) {
         // debugger
         this.totalData = res.data
+        if (this.totalData.game_count > 0) {
+          this.showTips = false
+          console.log(this.showTips)
+        }
         console.log(this.totalData)
         let list = res.data.list
         // 置空数组，防止data内的影响
@@ -192,7 +196,7 @@ export default {
     },
     // 题干查重
     onBlur() {
-      if (!this.qstitleArea) {
+      if (!this.titleArea) {
         return false
       }
       let url = '/api/cmp/'
@@ -204,7 +208,6 @@ export default {
         console.log(res)
         this.$vux.loading.hide()
         if (res.data.status === 0) {
-          // this.$vux.toast.text('题干无重复，请继续', 'middle')
           return
         }
         this.qstitleArea = ''
@@ -242,8 +245,6 @@ export default {
       } else {
         this.$wechat.closeWindow()
       }
-      // 首次进入后关闭不再显示进入小游戏
-      this.notfrist = false
     },
     // 失败时关闭
     defShowClo() {

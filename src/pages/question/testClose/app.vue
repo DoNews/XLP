@@ -15,12 +15,15 @@
 <script type='text/ecmascript-6'>
 import Vue from 'vue'
 import { Popup, XButton, AlertPlugin, ToastPlugin, LoadingPlugin, WechatPlugin, ConfirmPlugin } from 'vux' // 引用vux使用单引号
+import { get } from 'common/service/http.base'
+import { Auth } from 'common/js/mixin'
 Vue.use(AlertPlugin)
 Vue.use(ToastPlugin)
 Vue.use(LoadingPlugin)
 Vue.use(WechatPlugin)
 Vue.use(ConfirmPlugin)
 export default {
+  mixins: [Auth],
   components: {
     XButton,
     Popup
@@ -30,11 +33,21 @@ export default {
     }
   },
   methods: {
+    created() {
+      this.checkOpenId()
+    },
     close() {
+      let url = '/api/modify/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      get(url, params).then(res => {
+        return false
+      }, e => {
+      })
       this.$wechat.closeWindow()
     }
   }
-
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">

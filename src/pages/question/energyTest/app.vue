@@ -70,7 +70,10 @@ export default {
         this.$vux.loading.hide()
         if (res.data.status === 0) {
           this.$vux.alert.show({
-            title: '今日不再进入能量小测试~~'
+            title: '今日不再进入能量小测试~~',
+            onhide() {
+              this.$wechat.closeWindow()
+            }
           })
           return
         } else if (res.data.status === -1) {
