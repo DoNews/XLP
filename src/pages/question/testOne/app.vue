@@ -132,7 +132,6 @@ export default {
           item.isChecked = false
         })
         this.queslist = ques
-        // console.log(this.qsData.data)
       }, e => {
         this.$vux.loading.hide()
         this.$vux.alert.show({
@@ -164,8 +163,6 @@ export default {
           sum: this.qsData.data.length,
           sum_ok: this.sum_ok
         }
-        // console.log('答题数：' + this.sum)
-        // console.log('正确题数' + this.sum_ok)
         post(url, params).then(res => {
           if (res.data.status === 0) {
             location.href = './testClose.html'
