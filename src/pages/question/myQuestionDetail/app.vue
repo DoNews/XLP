@@ -79,7 +79,7 @@ export default {
       }
       console.log(pkvalue)
       get(url, params).then(res => {
-        console.log(res.data)
+        console.log(res.data.info[0].reqs)
         this.qsAreaListS = res.data.info[0].qsAreaListS
         this.qsType1ListS = res.data.info[0].qsType1ListS
         this.qsPutListS = res.data.info[0].qsPutListS

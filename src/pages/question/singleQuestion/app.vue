@@ -29,8 +29,8 @@
           <div style="width:80%;background-color:#fff;height:300px;margin:30% auto 0;border-radius:5px;text-align:center">
             <group>
               <h2 class="certifyT">恭喜您提交成功！</h2>
-              <p class="certifyP">您可选择继续录入或关闭，</p>
-              <p class="certifyP" v-show="showTips"> 首次点击关闭，进入能量小测试,</p>
+              <p class="certifyP">您可选择继续录入或关闭</p>
+              <p class="certifyP" v-show="showTips"> 首次点击关闭，进入能量小测试</p>
             </group>
             <div style="padding:0 15%;box-sizing:border-box">
               <x-button type="primary" @click.native="sucShowPro" >继续录入</x-button>

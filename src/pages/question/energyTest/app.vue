@@ -50,6 +50,7 @@ export default {
   },
   created() {
     this.checkOpenId()
+    this.checkGame()
   },
   methods: {
     startTtest() {
@@ -60,6 +61,16 @@ export default {
     },
     conShowClo() {
       this.confirmShow = false
+    },
+    checkGame() {
+      let url = '/api/modify/'
+      let params = {
+        openid: localStorage.getItem('openid')
+      }
+      get(url, params).then(res => {
+        return false
+      }, e => {
+      })
     },
     defShowClo() {
       let url = '/api/modify/'

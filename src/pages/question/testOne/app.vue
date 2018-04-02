@@ -4,7 +4,7 @@
       <div class="padd">
         <div class="qsitem">
           <div class="questionRules">
-            <span class="testOrder">{{curIndex+1}}</span><span>{{queslist.title}}</span>
+            <span class="testOrder">{{curIndex+1}}</span><span>{{queslist.is_Double ? '(多选)':'(单选)'}}{{queslist.title}}</span>
           </div>
           <div class="qsAnswerList"  v-for="(item, index) in queslist.item"  :key="index">
             <!--  && curCheck !== -1 -->
@@ -38,6 +38,7 @@ export default {
   },
   data() {
     return {
+      // sinordou: true,
       queslist: [],
       curIndex: 0,
       curCheck: [],
@@ -131,6 +132,7 @@ export default {
           item.isChecked = false
         })
         this.queslist = ques
+        // console.log(this.qsData.data)
       }, e => {
         this.$vux.loading.hide()
         this.$vux.alert.show({
