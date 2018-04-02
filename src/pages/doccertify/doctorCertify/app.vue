@@ -180,7 +180,7 @@ export default {
 
 .banImg {
   background: url('./img/banner.png') no-repeat center;
-  background-size: cover;
+  background-size: 100% 100%;
   height: 180px;
   width: 100%;
 }
@@ -193,6 +193,7 @@ export default {
 .weui-cell {
   border: 1px solid rgba(222, 222, 222, 0.3);
   background: #f5f5f5;
+  font-size: 0.9rem !important;
 }
 
 .submit {
@@ -201,6 +202,6 @@ export default {
   background: #bf1e2e;
   height: 45px;
   border-radius: 1px !important;
-  font-size: 16px !important;
+  font-size: 0.9rem !important;
 }
 </style>

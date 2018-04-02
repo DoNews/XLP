@@ -164,7 +164,7 @@ button.weui-btn, input.weui-btn {
 
 .banImg {
   background: url('./img/banner.png') no-repeat center;
-  background-size: cover;
+  background-size: 100% 100%;
   height: 180px;
   width: 100%;
 }

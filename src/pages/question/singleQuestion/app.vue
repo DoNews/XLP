@@ -30,7 +30,7 @@
             <group>
               <h2 class="certifyT">恭喜您提交成功！</h2>
               <p class="certifyP">您可选择继续录入或关闭，</p>
-              <p class="certifyP"> 如点击关闭，进入能量小测试,</p>
+              <p class="certifyP" v-model="notfrist" > 如点击关闭，进入能量小测试,</p>
             </group>
             <div style="padding:0 15%;box-sizing:border-box">
               <x-button type="primary" @click.native="sucShowPro" >继续录入</x-button>
@@ -94,6 +94,7 @@ export default {
   },
   data() {
     return {
+      notfrist: true,
       totalData: {},
       fivesucShow: false,
       lurusucShow: false,
@@ -105,7 +106,7 @@ export default {
       qsAreaListS: null,
       qsType1ListS: null,
       qsType2ListS: null,
-      qsPutListS: null,
+      qsPutListS: 1,
       reqs: [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
     }
   },
@@ -185,12 +186,15 @@ export default {
       this.fivesucShow = false
       this.qsAreaListS = ''
       this.qsType1ListS = ''
-      this.qsPutListS = ''
+      this.qsPutListS = 1
       this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
     },
     // 题干查重
     onBlur() {
+      if (!this.qstitleArea) {
+        return false
+      }
       let url = '/api/cmp/'
       let params = {
         openid: localStorage.getItem('openid'),
@@ -203,6 +207,7 @@ export default {
           // this.$vux.toast.text('题干无重复，请继续', 'middle')
           return
         }
+        this.qstitleArea = ''
         this.$vux.alert.show({
           title: '您录入的提干与之前提交的有重复请重新录入新的提干。否则无法提交',
           onShow() {
@@ -220,7 +225,7 @@ export default {
       this.lurusucShow = false
       this.qsAreaListS = ''
       this.qsType1ListS = ''
-      this.qsPutListS = ''
+      this.qsPutListS = 1
       this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
     },
@@ -228,30 +233,32 @@ export default {
     sucShowClo() {
       this.qsAreaListS = ''
       this.qsType1ListS = ''
-      this.qsPutListS = ''
+      this.qsPutListS = 1
       this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
       if (this.totalData.game_count === 0) {
         location.href = './energyTest.html'
         this.lurusucShow = false
       } else {
-        this.lurusucShow = false
+        this.$wechat.closeWindow()
       }
+      // 首次进入后关闭不再显示进入小游戏
+      this.notfrist = false
     },
     // 失败时关闭
     defShowClo() {
       this.qsAreaListS = ''
       this.qsType1ListS = ''
-      this.qsPutListS = ''
+      this.qsPutListS = 1
       this.reqs = [{ 'title': '', 'isright': true }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }, { 'title': '', 'isright': false }]
       this.titleArea = ''
       this.lurudefShow = false
     },
     handleSubmit() {
-      console.log('1:', this.qsAreaListS)
-      console.log('2:', this.qsType1ListS)
-      console.log('3:', this.qsPutListS)
-      console.log('4:', this.titleArea)
+      console.log('问题区域:', this.qsAreaListS)
+      console.log('问题类型:', this.qsType1ListS)
+      console.log('单选或者多选:', this.qsPutListS)
+      console.log('题干:', this.titleArea)
       if (!this.qsAreaListS || !this.qsType1ListS || !this.qsPutListS || !this.titleArea) {
         this.$vux.alert.show({
           title: '您有信息未录入完成,无法提交',
@@ -277,6 +284,14 @@ export default {
           title: '必须选择一个正确答案哦'
         })
         return
+      } else {
+        for (let i = 0; i < this.reqs.length; i++) {
+          if (this.reqs[i].isright && !this.reqs[i].title) {
+            this.$vux.alert.show({
+              title: '请填写正确答案的内容'
+            })
+          }
+        }
       }
       // 以后该需求可能会改为多选题最少选择两个正确答案，这需要判断题目类型
       // } else if (this.qsPutListS === 2) {
@@ -302,7 +317,6 @@ export default {
         text: '提交中...'
       })
       post(url, params).then(res => {
-        // console.log(res)
         this.$vux.loading.hide()
         if (res.data.status === 0) {
           this.lurusucShow = true
@@ -310,10 +324,11 @@ export default {
         }
         if (res.data.status === -1) {
           this.$vux.alert.show({
-            title: '您今日已经创建了五个问题了哦~~',
+            title: '您已完成今日任务',
             onShow() {
             },
             onHide() {
+              this.$wechat.closeWindow()
             }
           })
           return false
@@ -431,7 +446,7 @@ export default {
 .questionTitle {
   box-sizing: border-box;
   width: 100%;
-  height: 18px;
+  height: auto;
   line-height: 18px;
   font-size: 0.9rem;
   color: #231816;
