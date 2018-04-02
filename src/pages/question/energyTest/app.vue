@@ -184,7 +184,7 @@ button.weui-btn, input.weui-btn {
 
 .submit {
   margin: 35px auto 30px;
-  background: #bf1e2e;
+  background: #bf1e2e !important;
   height: 40px;
   border-radius: 1px !important;
   font-size: 16px !important;

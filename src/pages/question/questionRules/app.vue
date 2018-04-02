@@ -84,7 +84,7 @@ export default {
 .submit {
   width: 90% !important;
   margin: 70px auto 30px;
-  background: #bf1e2e;
+  background: #bf1e2e !important;
   height: 45px;
   border-radius: 1px !important;
   font-size: 16px !important;
