@@ -197,7 +197,7 @@ var config = {
     proxy: {
       "/api": {
         // target: "http://172.29.97.34:8000",
-        target: "http://118.31.16.74",
+        target: "http://xlp.yuemia.com",
         changeOrigin: true
         // secure: false
       }

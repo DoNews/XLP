@@ -4,7 +4,7 @@ import {
 export const checkForm = {
   methods: {
     checkTel(tel) {
-      let re = /^1(3|4|5|7|8)\d{9}$/
+      let re = /^1(3|4|5|7|8’)\d{9}$/
       let result = re.test(tel)
       if (result) {
         return true
@@ -55,9 +55,8 @@ export const Auth = {
       }
       if (!openid) {
         if (!queryOid) {
-          let ymuurl = 'http://wx.yuemia.com/wechat/openid.ashx?wx=kwgd&type=1&Url=' + encodeURIComponent(currentUrl)
-          let redUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2b2993bc1427167a&redirect_uri=' + encodeURIComponent(
-            ymuurl) + '&response_type=code&scope=snsapi_base&state=O#wechat_redirect'
+          let ymuurl = 'http://wx.yuemia.com/wechat/openid.ashx?wx=seed&type=1&Url=' + encodeURIComponent(currentUrl)
+          let redUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx28fa6d8e3424b13e&redirect_uri=' + encodeURIComponent(ymuurl) + '&response_type=code&scope=snsapi_base&state=O#wechat_redirect'
           window.location.href = redUrl
         }
       } else {

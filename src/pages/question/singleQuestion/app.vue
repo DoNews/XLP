@@ -193,6 +193,7 @@ export default {
     onBlur() {
       let url = '/api/cmp/'
       let params = {
+        openid: localStorage.getItem('openid'),
         qstitleArea: this.titleArea
       }
       post(url, params).then(res => {

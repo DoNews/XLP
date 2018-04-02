@@ -3,10 +3,10 @@
       <div class="banImg"></div> 
       <div>
         <group>
-          <x-input title="医生姓名" v-model="name"  placeholder="请输入您的姓名(必填)" is-type="china-name"></x-input>
+          <x-input title="医生姓名" v-model="name"  placeholder="请输入您的姓名(必填)"></x-input>
       </group>
       <group>
-          <x-input title="手机号码" v-model="phone" placeholder="请输入您的手机号码(必填)" keyboard="number" is-type="china-mobile"></x-input>
+          <x-input title="手机号码" v-model="phone" placeholder="请输入您的手机号码(必填)" keyboard="number"  is-type="china-mobile"></x-input>
       </group>
       <x-button type="warn" class="submit" @click.native="handleSubmit">提交认证</x-button>
       <div>
@@ -75,12 +75,13 @@ export default {
   methods: {
     sucShowPro() {
       this.sucShow = false
-      location.href = './Success.html'
+      // location.href = './Success.html'
     },
     sucShowClo() {
-      this.sucShow = false
-      this.name = ''
-      this.phone = ''
+      this.$wechat.closeWindow()
+      // this.sucShow = false
+      // this.name = ''
+      // this.phone = ''
     },
     defShowClo() {
       this.defShow = false
@@ -100,7 +101,7 @@ export default {
       }
       if (!this.phone) {
         this.$vux.alert.show({
-          title: '请输入您的姓名',
+          title: '请输入您的电话',
           onShow() {
           },
           onHide() {
@@ -108,6 +109,16 @@ export default {
         })
         return
       }
+      // if (!this.checkTel(this.phone)) {
+      //   this.$vux.alert.show({
+      //     title: '您输入的电话号码不正确',
+      //     onShow() {
+      //     },
+      //     onHide() {
+      //     }
+      //   })
+      //   return
+      // }
       this.submit()
     },
     submit() {
