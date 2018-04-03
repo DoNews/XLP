@@ -75,7 +75,7 @@ export default {
   methods: {
     sucShowPro() {
       this.sucShow = false
-      // location.href = './Success.html'
+      location.href = './programIntro.html'
     },
     sucShowClo() {
       this.$wechat.closeWindow()
